@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -93,38 +94,72 @@ fun MainScreen(
             user?.let {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                    shape = MaterialTheme.shapes.medium
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                    shape = MaterialTheme.shapes.large,
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
                 ) {
                     Column(
                         modifier = Modifier
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Text("Welcome back, ${it.name}", style = MaterialTheme.typography.headlineSmall)
-                        Text("Level ${it.level}", color = MaterialTheme.colorScheme.primary)
-
-                        LinearProgressIndicator(
-                            progress = it.xp / 100f,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(8.dp)
+                        // Header
+                        Text(
+                            text = "Welcome, ${it.name}",
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = MaterialTheme.colorScheme.primary
                         )
-                        Text("${it.xp}/100 XP to next level", style = MaterialTheme.typography.bodyMedium)
-                        Text("Current Streak: ${it.streak} days", style = MaterialTheme.typography.bodySmall)
+
+                        // Level
+                        Text(
+                            text = "Level ${it.level}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+                        // XP Progress
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            LinearProgressIndicator(
+                                progress = it.xp / 100f,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(8.dp),
+                                color = MaterialTheme.colorScheme.primary,
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                            Text(
+                                text = "${it.xp}/100 XP to next level",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
+                        // Streak
+                        Text(
+                            text = "Current Streak: ${it.streak} days",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+
+                        // Logout button aligned right
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            TextButton(
+                                onClick = { viewModel.logout(onLoggedOut = onLogout) }
+                            ) {
+                                Text(
+                                    text = "Log out",
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                            }
+                        }
                     }
                 }
-                TextButton(
-                    onClick = { viewModel.logout(onLoggedOut = onLogout) },
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text(
-                        text = "Log out",
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                }
             }
+
 
             // Overdue Tasks
             if (overdueTasks.isNotEmpty()) {
