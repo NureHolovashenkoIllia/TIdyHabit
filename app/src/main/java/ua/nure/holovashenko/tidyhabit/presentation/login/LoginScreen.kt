@@ -123,6 +123,7 @@ fun LoginScreen(
                         val validAge = age.toIntOrNull()
                         if (name.isNotBlank() && validAge != null) {
                             viewModel.login(name.trim(), validAge)
+                            onLoginSuccess()
                         } else {
                             showError = true
                         }
