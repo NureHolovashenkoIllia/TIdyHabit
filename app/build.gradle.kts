@@ -35,6 +35,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+        freeCompilerArgs += listOf(
+            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
+        )
     }
     buildFeatures {
         compose = true
@@ -46,6 +49,8 @@ android {
 
 dependencies {
 
+    implementation("androidx.compose.material:material:1.6.1")
+    implementation(libs.androidx.ui.text.google.fonts.v161)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")

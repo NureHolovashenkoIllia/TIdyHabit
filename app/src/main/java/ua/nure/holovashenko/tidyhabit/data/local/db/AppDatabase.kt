@@ -8,7 +8,7 @@ import ua.nure.holovashenko.tidyhabit.data.local.dao.UserDao
 import ua.nure.holovashenko.tidyhabit.data.local.model.Task
 import ua.nure.holovashenko.tidyhabit.data.local.model.User
 
-@Database(entities = [Task::class, User::class], version = 1, exportSchema = false)
+@Database(entities = [Task::class, User::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao

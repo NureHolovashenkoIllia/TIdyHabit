@@ -11,8 +11,9 @@ import ua.nure.holovashenko.tidyhabit.data.local.model.Task
 
 @Dao
 interface TaskDao {
-    @Query("SELECT * FROM tasks ORDER BY dueDate ASC")
-    fun getAllTasks(): Flow<List<Task>>
+
+    @Query("SELECT * FROM tasks WHERE userId = :userId ORDER BY dueDate ASC")
+    fun getAllTasksForUser(userId: Int): Flow<List<Task>>
 
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertTask(task: Task)
@@ -23,6 +24,6 @@ interface TaskDao {
     @Delete
     suspend fun deleteTask(task: Task)
 
-    @Query("DELETE FROM tasks")
-    suspend fun clearAll()
+    @Query("DELETE FROM tasks WHERE userId = :userId")
+    suspend fun clearAllForUser(userId: Int)
 }

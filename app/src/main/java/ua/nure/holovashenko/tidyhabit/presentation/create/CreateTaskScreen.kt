@@ -1,16 +1,242 @@
 package ua.nure.holovashenko.tidyhabit.presentation.create
 
+import android.app.DatePickerDialog
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import ua.nure.holovashenko.tidyhabit.data.local.model.TaskCategory
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CreateTaskScreen(onTaskSaved: () -> Unit) {
-    Column {
-        Text("Create Task Screen")
-        Button(onClick = onTaskSaved) {
-            Text("Save Task")
+fun CreateTaskScreen(
+    viewModel: CreateTaskViewModel = hiltViewModel(),
+    onTaskSaved: () -> Unit,
+    onCancel: () -> Unit
+) {
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy") }
+    val context = LocalContext.current
+
+    val selectedDate = remember(viewModel.dueDateMillis) {
+        Instant.ofEpochMilli(viewModel.dueDateMillis)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate()
+    }
+
+    var showTitleError by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            shape = MaterialTheme.shapes.large,
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                // Title
+                Text(
+                    text = "Create New Task",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                // Task Title
+                OutlinedTextField(
+                    value = viewModel.title,
+                    onValueChange = {
+                        viewModel.title = it
+                        if (showTitleError && it.isNotBlank()) showTitleError = false
+                    },
+                    label = { Text("Task Title") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = showTitleError
+                )
+
+                if (showTitleError) {
+                    Text(
+                        text = "Task title cannot be empty.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                // Task Description
+                OutlinedTextField(
+                    value = viewModel.description,
+                    onValueChange = { viewModel.description = it },
+                    label = { Text("Description (optional)") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                // Category Section
+                Text(
+                    text = "Select Category",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    TaskCategory.entries.forEach { category ->
+                        val isSelected = viewModel.category == category
+                        val backgroundColor by animateColorAsState(
+                            targetValue = if (isSelected)
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                            else
+                                MaterialTheme.colorScheme.surface
+                        )
+
+                        val borderColor by animateColorAsState(
+                            targetValue = if (isSelected)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.outline
+                        )
+
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 2.dp)
+                                .clickable { viewModel.category = category },
+                            shape = MaterialTheme.shapes.medium,
+                            color = backgroundColor,
+                            border = BorderStroke(1.dp, borderColor),
+                            tonalElevation = if (isSelected) 2.dp else 0.dp
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RadioButton(
+                                    selected = isSelected,
+                                    onClick = null, // click handled on Surface
+                                    colors = RadioButtonDefaults.colors(
+                                        selectedColor = MaterialTheme.colorScheme.primary
+                                    )
+                                )
+                                Text(
+                                    text = category.name.replaceFirstChar { it.uppercase() },
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    modifier = Modifier.padding(start = 8.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Date Picker
+                Column {
+                    Text(
+                        text = "Due Date",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = selectedDate.format(dateFormatter),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+                        OutlinedButton(
+                            onClick = {
+                                val picker = DatePickerDialog(
+                                    context,
+                                    { _, year, month, dayOfMonth ->
+                                        val date = LocalDate.of(year, month + 1, dayOfMonth)
+                                        viewModel.dueDateMillis = date
+                                            .atStartOfDay(ZoneId.systemDefault())
+                                            .toInstant()
+                                            .toEpochMilli()
+                                    },
+                                    selectedDate.year,
+                                    selectedDate.monthValue - 1,
+                                    selectedDate.dayOfMonth
+                                )
+                                picker.show()
+                            }
+                        ) {
+                            Text("Change")
+                        }
+                    }
+                }
+
+                // Save Button
+                Button(
+                    onClick = {
+                        if (viewModel.title.isBlank()) {
+                            showTitleError = true
+                        } else {
+                            viewModel.saveTask(onTaskSaved)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Save Task")
+                }
+
+                TextButton(
+                    onClick = onCancel,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Cancel",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import ua.nure.holovashenko.tidyhabit.data.local.db.AppDatabase
 import ua.nure.holovashenko.tidyhabit.data.local.model.User
@@ -20,19 +21,27 @@ class LoginViewModel @Inject constructor(
     private val _loginComplete = MutableStateFlow(false)
     val loginComplete: StateFlow<Boolean> = _loginComplete
 
-    init {
+    private val _isLoginChecked = MutableStateFlow(false)
+    val isLoginChecked: StateFlow<Boolean> = _isLoginChecked
+
+    fun checkAutoLogin() {
         viewModelScope.launch {
-            prefs.userData.collect { user ->
-                if (user != null) _loginComplete.value = true
-            }
+            val user = prefs.userData.firstOrNull()
+            _loginComplete.value = false
+            _loginComplete.value = user != null
+            _isLoginChecked.value = true
         }
     }
 
     fun login(name: String, age: Int) {
         viewModelScope.launch {
-            val user = User(name = name, age = age)
-            val userId = db.userDao().insert(user)
-            prefs.saveUser(name, age)
+            val existingUser = db.userDao().getUserByName(name)
+            val userId = if (existingUser != null) {
+                existingUser.id
+            } else {
+                db.userDao().insert(User(name = name, age = age)).toInt()
+            }
+            prefs.saveUser(userId, name, age)
             _loginComplete.value = true
         }
     }

@@ -15,6 +15,8 @@ import ua.nure.holovashenko.tidyhabit.data.local.dao.TaskDao
 import ua.nure.holovashenko.tidyhabit.data.local.dao.UserDao
 import ua.nure.holovashenko.tidyhabit.data.local.db.AppDatabase
 import ua.nure.holovashenko.tidyhabit.data.local.preferences.UserPreferences
+import ua.nure.holovashenko.tidyhabit.data.local.repository.TaskRepository
+import ua.nure.holovashenko.tidyhabit.data.local.repository.UserRepository
 import javax.inject.Singleton
 
 @Module
@@ -28,7 +30,9 @@ object AppModule {
             context,
             AppDatabase::class.java,
             "tasks_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration(true)
+            .build()
     }
 
     @Provides
@@ -36,6 +40,14 @@ object AppModule {
 
     @Provides
     fun provideUserDao(db: AppDatabase): UserDao = db.userDao()
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(userDao: UserDao, userPrefs: UserPreferences): UserRepository = UserRepository(userDao, userPrefs)
+
+    @Provides
+    @Singleton
+    fun provideTaskRepository(taskDao: TaskDao, userPrefs: UserPreferences): TaskRepository = TaskRepository(taskDao, userPrefs)
 
     @Provides
     @Singleton
