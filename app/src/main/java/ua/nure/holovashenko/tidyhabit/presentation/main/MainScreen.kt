@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import ua.nure.holovashenko.tidyhabit.R
 import ua.nure.holovashenko.tidyhabit.data.local.model.Task
 import java.time.Instant
 import java.time.LocalDate
@@ -45,7 +47,7 @@ fun MainScreen(
 ) {
     val tasks by viewModel.tasks.collectAsState()
     val user by viewModel.user.collectAsState()
-
+    val context = LocalContext.current
     val today = LocalDate.now()
 
     val overdueTasks = tasks.filter {
@@ -76,7 +78,7 @@ fun MainScreen(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = onCreateTaskClick) {
-                Icon(Icons.Default.Add, contentDescription = "Add Task")
+                Icon(Icons.Default.Add, contentDescription = context.getString(R.string.add_task))
             }
         }
     ) { paddingValues ->
@@ -105,14 +107,14 @@ fun MainScreen(
                     ) {
                         // Header
                         Text(
-                            text = "Welcome, ${it.name}",
+                            text = context.getString(R.string.welcome, it.name),
                             style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.primary
                         )
 
                         // Level
                         Text(
-                            text = "Level ${it.level}",
+                            text = context.getString(R.string.user_level, it.level),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -128,7 +130,7 @@ fun MainScreen(
                                 trackColor = MaterialTheme.colorScheme.surfaceVariant
                             )
                             Text(
-                                text = "${it.xp}/100 XP to next level",
+                                text = context.getString(R.string.user_xp, it.xp),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -136,7 +138,11 @@ fun MainScreen(
 
                         // Streak
                         Text(
-                            text = "Current Streak: ${it.streak} days",
+                            text = context.resources.getQuantityString(
+                                R.plurals.user_streak,
+                                it.streak,
+                                it.streak
+                            ),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.secondary
                         )
@@ -150,7 +156,7 @@ fun MainScreen(
                                 onClick = { viewModel.logout(onLoggedOut = onLogout) }
                             ) {
                                 Text(
-                                    text = "Log out",
+                                    text = context.getString(R.string.logout),
                                     color = MaterialTheme.colorScheme.error,
                                     style = MaterialTheme.typography.labelLarge
                                 )
@@ -160,11 +166,10 @@ fun MainScreen(
                 }
             }
 
-
             // Overdue Tasks
             if (overdueTasks.isNotEmpty()) {
                 TaskSection(
-                    title = "Overdue",
+                    title = context.getString(R.string.overdue_section_title),
                     tasks = overdueTasks,
                     onComplete = viewModel::completeTask,
                     onDelete = viewModel::deleteTask,
@@ -175,7 +180,7 @@ fun MainScreen(
             // Today Tasks
             if (todayTasks.isNotEmpty()) {
                 TaskSection(
-                    title = "Today",
+                    title = context.getString(R.string.today_section_title),
                     tasks = todayTasks,
                     onComplete = viewModel::completeTask,
                     onDelete = viewModel::deleteTask,
@@ -187,7 +192,7 @@ fun MainScreen(
             if (upcomingTasks.isNotEmpty()) {
                 groupedUpcomingTasks.forEach { (date, tasksForDate) ->
                     TaskSection(
-                        title = date.format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                        title = date.format(java.time.format.DateTimeFormatter.ofPattern(context.getString(R.string.date_format))),
                         tasks = tasksForDate,
                         onComplete = viewModel::completeTask,
                         onDelete = viewModel::deleteTask,

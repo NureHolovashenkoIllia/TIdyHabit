@@ -6,7 +6,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import ua.nure.holovashenko.tidyhabit.R
 import ua.nure.holovashenko.tidyhabit.data.local.model.Task
 
 @Composable
@@ -16,8 +18,10 @@ fun TaskSection(
     onComplete: (Task) -> Unit,
     onDelete: (Task) -> Unit,
     titleColor: Color = MaterialTheme.colorScheme.onBackground,
-    cardColor: Color = MaterialTheme.colorScheme.surface // 👈 новий параметр
+    cardColor: Color = MaterialTheme.colorScheme.surface
 ) {
+    val context = LocalContext.current
+
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
             text = title,
@@ -25,7 +29,7 @@ fun TaskSection(
             color = titleColor
         )
         if (tasks.isEmpty()) {
-            Text("No tasks in this section.", style = MaterialTheme.typography.bodyMedium)
+            Text(context.getString(R.string.no_tasks_in_section), style = MaterialTheme.typography.bodyMedium)
         } else {
             tasks.forEach { task ->
                 TaskCard(

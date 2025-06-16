@@ -1,3 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TIdyHabit</string>
+    <string name="app_name">Tidy Habit</string>
+    <string name="introduction_text">Let\'s Get Started!</string>
+    <string name="sign_in_text">Sign in to build better cleaning habits</string>
+    <string name="enter_name">Name</string>
+    <string name="enter_age">Age</string>
+    <string name="error">Please enter a valid name and age.</string>
+    <string name="login">Login</string>
+
+    <string name="add_task">Add Task</string>
+    <string name="welcome">Welcome, %1$s!</string>
+    <string name="user_level">Level %1$d</string>
+    <string name="logout">Log out</string>
+    <string name="user_xp">%1$d/100 XP to next level</string>
+    <plurals name="user_streak">
+        <item quantity="one">Current Streak: %d day</item>
+        <item quantity="few">Current Streak: %d days</item>
+        <item quantity="many">Current Streak: %d days</item>
+        <item quantity="other">Current Streak: %d days</item>
+    </plurals>
+
+    <string name="overdue_section_title">Overdue</string>
+    <string name="today_section_title">Today</string>
+    <string name="date_format">MM.dd.yyyy</string>
+
+    <string name="no_tasks_in_section">No tasks in this section.</string>
+
+    <string name="delete_task">Delete</string>
+    <string name="complete_task">Complete</string>
+    <string name="task_category">Category: %1$s</string>
+
+    <string name="category_dishes">Dishes</string>
+    <string name="category_vacuum">Vacuum</string>
+    <string name="category_laundry">Laundry</string>
+    <string name="category_other">Other</string>
+
+    <string name="create_task">Create New Task</string>
+    <string name="task_title">Title*</string>
+    <string name="task_description">Description</string>
+    <string name="task_category_select">Select Category</string>
+    <string name="task_error">Task title cannot be empty.</string>
+    <string name="task_due_date">Due Date</string>
+    <string name="task_date_change">Change</string>
+    <string name="save_task">Save Task</string>
+    <string name="task_cancel">Cancel</string>
 </resources>

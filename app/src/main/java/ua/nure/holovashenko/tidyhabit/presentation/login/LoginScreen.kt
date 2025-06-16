@@ -26,9 +26,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import ua.nure.holovashenko.tidyhabit.R
 
 @Composable
 fun LoginScreen(
@@ -40,6 +42,7 @@ fun LoginScreen(
     var name by remember { mutableStateOf("") }
     var age by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.checkAutoLogin()
@@ -47,9 +50,7 @@ fun LoginScreen(
 
     LaunchedEffect(loginComplete, isLoginChecked) {
         if (isLoginChecked && loginComplete) {
-            if (name.isNotBlank()) {
-                onLoginSuccess()
-            }
+            onLoginSuccess()
         }
     }
 
@@ -74,13 +75,13 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Let's Get Started!",
+                    text = context.getString(R.string.introduction_text),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
 
                 Text(
-                    text = "Sign in to build better cleaning habits",
+                    text = context.getString(R.string.sign_in_text),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -91,7 +92,7 @@ fun LoginScreen(
                         name = it
                         if (showError) showError = false
                     },
-                    label = { Text("Name") },
+                    label = { Text(context.getString(R.string.enter_name)) },
                     isError = showError && name.isBlank(),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -103,7 +104,7 @@ fun LoginScreen(
                         age = it
                         if (showError) showError = false
                     },
-                    label = { Text("Age") },
+                    label = { Text(context.getString(R.string.enter_age)) },
                     isError = showError && age.toIntOrNull() == null,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
@@ -112,7 +113,7 @@ fun LoginScreen(
 
                 if (showError) {
                     Text(
-                        text = "Please enter a valid name and age.",
+                        text = context.getString(R.string.error),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall
                     )
@@ -131,7 +132,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Text("Login")
+                    Text(context.getString(R.string.login))
                 }
             }
         }

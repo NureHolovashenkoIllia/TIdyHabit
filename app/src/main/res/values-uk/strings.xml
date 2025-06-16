@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tidy Habit</string>
+    <string name="introduction_text">Почнемо!</string>
+    <string name="sign_in_text">Увійдіть, щоб покращити свої звички до прибирання</string>
+    <string name="enter_name">Ім’я</string>
+    <string name="enter_age">Вік</string>
+    <string name="error">Будь ласка, введіть ваше ім\'я та вік.</string>
+    <string name="login">Увійти</string>
+
+    <string name="add_task">Додати завдання</string>
+    <string name="welcome">Вітаємо, %1$s!</string>
+    <string name="user_level">Рівень %1$d</string>
+    <string name="logout">Вийти</string>
+    <string name="user_xp">%1$d/100 XP до наступного рівня</string>
+    <plurals name="user_streak">
+        <item quantity="one">Поточний стрік: %d день</item>
+        <item quantity="few">Поточний стрік: %d дні</item>
+        <item quantity="many">Поточний стрік: %d днів</item>
+        <item quantity="other">Поточний стрік: %d днів</item>
+    </plurals>
+
+    <string name="overdue_section_title">Прострочені</string>
+    <string name="today_section_title">Сьогодні</string>
+    <string name="date_format">dd.MM.yyyy</string>
+
+    <string name="no_tasks_in_section">У цій секції немає завдань.</string>
+
+    <string name="delete_task">Видалити</string>
+    <string name="complete_task">Виконати</string>
+    <string name="task_category">Категорія: %1$s</string>
+
+    <string name="category_dishes">Миття посуду</string>
+    <string name="category_vacuum">Пилососіння</string>
+    <string name="category_laundry">Прання</string>
+    <string name="category_other">Інше</string>
+
+    <string name="create_task">Додати нове завдання</string>
+    <string name="task_title">Назва*</string>
+    <string name="task_description">Опис</string>
+    <string name="task_category_select">Оберіть категорію</string>
+    <string name="task_error">Назва завдання не може бути порожньою.</string>
+    <string name="task_due_date">Термін</string>
+    <string name="task_date_change">Змінити</string>
+    <string name="save_task">Зберегти завдання</string>
+    <string name="task_cancel">Скасувати</string>
+</resources>

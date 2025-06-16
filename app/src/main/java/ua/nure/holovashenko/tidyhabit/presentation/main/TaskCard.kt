@@ -1,5 +1,6 @@
 package ua.nure.holovashenko.tidyhabit.presentation.main
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,9 @@ import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
+import ua.nure.holovashenko.tidyhabit.R
+import ua.nure.holovashenko.tidyhabit.data.local.model.TaskCategory
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -36,6 +40,7 @@ fun TaskCard(
     cardColor: Color = MaterialTheme.colorScheme.surface
 ) {
     val dismissState = rememberDismissState()
+    val context = LocalContext.current
 
     LaunchedEffect(dismissState.currentValue) {
         if (
@@ -68,7 +73,7 @@ fun TaskCard(
             ) {
                 if (!task.isCompleted) {
                     Text(
-                        text = "Complete",
+                        text = context.getString(R.string.complete_task),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier.padding(end = 24.dp)
@@ -113,7 +118,7 @@ fun TaskCard(
 
                     // Категорія
                     Text(
-                        text = "Category: ${task.category.name.lowercase().replaceFirstChar { it.uppercase() }}",
+                        text = context.getString(R.string.task_category, task.category.getDisplayName(context)),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -125,16 +130,25 @@ fun TaskCard(
                     ) {
                         if (!task.isCompleted) {
                             TextButton(onClick = { onComplete(task) }) {
-                                Text("Complete")
+                                Text(context.getString(R.string.complete_task))
                             }
                         }
 
                         TextButton(onClick = { onDelete(task) }) {
-                            Text("Delete")
+                            Text(context.getString(R.string.delete_task))
                         }
                     }
                 }
             }
         }
     )
+}
+
+fun TaskCategory.getDisplayName(context: Context): String {
+    return when (this) {
+        TaskCategory.DISHES -> context.getString(R.string.category_dishes)
+        TaskCategory.VACUUM -> context.getString(R.string.category_vacuum)
+        TaskCategory.LAUNDRY -> context.getString(R.string.category_laundry)
+        TaskCategory.OTHER -> context.getString(R.string.category_other)
+    }
 }

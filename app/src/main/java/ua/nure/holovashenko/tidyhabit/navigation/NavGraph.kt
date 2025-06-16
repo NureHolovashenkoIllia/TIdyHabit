@@ -32,14 +32,20 @@ fun AppNavGraph(navController: NavHostController) {
 
             if (shouldLogout) {
                 LaunchedEffect(Unit) {
-                    delay(500)
+                    delay(1000)
                     navController.popBackStack()
                 }
             }
 
             MainScreen(
                 onCreateTaskClick = { navController.navigate(NavDestinations.CREATE_TASK) },
-                onLogout = { shouldLogout = true }
+                onLogout = {
+                    navController.navigate(NavDestinations.LOGIN) {
+                        popUpTo(NavDestinations.MAIN) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                    shouldLogout = true
+                }
             )
         }
         composable(NavDestinations.CREATE_TASK) {

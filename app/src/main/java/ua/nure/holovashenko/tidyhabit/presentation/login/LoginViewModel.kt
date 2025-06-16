@@ -24,11 +24,19 @@ class LoginViewModel @Inject constructor(
     private val _isLoginChecked = MutableStateFlow(false)
     val isLoginChecked: StateFlow<Boolean> = _isLoginChecked
 
+    val userName = MutableStateFlow("")
+    val userAge = MutableStateFlow(0)
+
     fun checkAutoLogin() {
         viewModelScope.launch {
             val user = prefs.userData.firstOrNull()
-            _loginComplete.value = false
-            _loginComplete.value = user != null
+            if (user != null) {
+                userName.value = user.first
+                userAge.value = user.second
+                _loginComplete.value = true
+            } else {
+                _loginComplete.value = false
+            }
             _isLoginChecked.value = true
         }
     }

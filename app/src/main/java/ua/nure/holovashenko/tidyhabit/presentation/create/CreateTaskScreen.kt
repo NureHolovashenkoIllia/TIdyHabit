@@ -36,7 +36,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import ua.nure.holovashenko.tidyhabit.R
 import ua.nure.holovashenko.tidyhabit.data.local.model.TaskCategory
+import ua.nure.holovashenko.tidyhabit.presentation.main.getDisplayName
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -49,8 +51,8 @@ fun CreateTaskScreen(
     onTaskSaved: () -> Unit,
     onCancel: () -> Unit
 ) {
-    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy") }
     val context = LocalContext.current
+    val dateFormatter = remember { DateTimeFormatter.ofPattern(context.getString(R.string.date_format)) }
 
     val selectedDate = remember(viewModel.dueDateMillis) {
         Instant.ofEpochMilli(viewModel.dueDateMillis)
@@ -80,7 +82,7 @@ fun CreateTaskScreen(
             ) {
                 // Title
                 Text(
-                    text = "Create New Task",
+                    text = context.getString(R.string.create_task),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -92,7 +94,7 @@ fun CreateTaskScreen(
                         viewModel.title = it
                         if (showTitleError && it.isNotBlank()) showTitleError = false
                     },
-                    label = { Text("Task Title") },
+                    label = { Text(context.getString(R.string.task_title)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     isError = showTitleError
@@ -100,7 +102,7 @@ fun CreateTaskScreen(
 
                 if (showTitleError) {
                     Text(
-                        text = "Task title cannot be empty.",
+                        text = context.getString(R.string.task_error),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error
                     )
@@ -110,13 +112,13 @@ fun CreateTaskScreen(
                 OutlinedTextField(
                     value = viewModel.description,
                     onValueChange = { viewModel.description = it },
-                    label = { Text("Description (optional)") },
+                    label = { Text(context.getString(R.string.task_description)) },
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 // Category Section
                 Text(
-                    text = "Select Category",
+                    text = context.getString(R.string.task_category_select),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -160,7 +162,7 @@ fun CreateTaskScreen(
                                     )
                                 )
                                 Text(
-                                    text = category.name.replaceFirstChar { it.uppercase() },
+                                    text = category.getDisplayName(context).replaceFirstChar { it.uppercase() },
                                     style = MaterialTheme.typography.bodyLarge,
                                     modifier = Modifier.padding(start = 8.dp)
                                 )
@@ -172,7 +174,7 @@ fun CreateTaskScreen(
                 // Date Picker
                 Column {
                     Text(
-                        text = "Due Date",
+                        text = context.getString(R.string.task_due_date),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -206,7 +208,7 @@ fun CreateTaskScreen(
                                 picker.show()
                             }
                         ) {
-                            Text("Change")
+                            Text(context.getString(R.string.task_date_change))
                         }
                     }
                 }
@@ -222,7 +224,7 @@ fun CreateTaskScreen(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Save Task")
+                    Text(context.getString(R.string.save_task))
                 }
 
                 TextButton(
@@ -231,7 +233,7 @@ fun CreateTaskScreen(
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = "Cancel",
+                        text = context.getString(R.string.task_cancel),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
