@@ -1,9 +1,6 @@
 package ua.nure.holovashenko.tidyhabit.data.local.repository
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.firstOrNull
 import ua.nure.holovashenko.tidyhabit.data.local.dao.TaskDao
 import ua.nure.holovashenko.tidyhabit.data.local.model.Task
 import ua.nure.holovashenko.tidyhabit.data.local.preferences.UserPreferences
@@ -13,9 +10,10 @@ class TaskRepository @Inject constructor(
     private val taskDao: TaskDao,
     private val userPreferences: UserPreferences
 ) {
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val tasks: Flow<List<Task>> = userPreferences.userIdFlow.flatMapLatest { userId ->
-        if (userId != null) taskDao.getAllTasksForUser(userId) else flowOf(emptyList())
+    suspend fun getTasks(): List<Task> {
+        val userId = userPreferences.getUserId()
+        return if (userId != null) taskDao.getAllTasksForUser(userId).firstOrNull() ?: emptyList()
+        else emptyList()
     }
 
     suspend fun addTask(task: Task) = taskDao.insertTask(task)

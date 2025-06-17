@@ -1,42 +1,37 @@
 package ua.nure.holovashenko.tidyhabit.data.local.preferences
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import android.content.SharedPreferences
 
 class UserPreferences(
-    private val dataStore: DataStore<Preferences>
+    private val prefs: SharedPreferences
 ) {
     companion object {
-        val USER_NAME = stringPreferencesKey("user_name")
-        val USER_AGE = intPreferencesKey("user_age")
-        val USER_ID = intPreferencesKey("user_id") // новий ключ
+        private const val USER_ID = "user_id"
+        private const val USER_NAME = "user_name"
+        private const val USER_AGE = "user_age"
     }
 
-    suspend fun saveUser(id: Int, name: String, age: Int) {
-        dataStore.edit {
-            it[USER_ID] = id
-            it[USER_NAME] = name
-            it[USER_AGE] = age
+    fun saveUser(id: Int, name: String, age: Int) {
+        prefs.edit().apply {
+            putInt(USER_ID, id)
+            putString(USER_NAME, name)
+            putInt(USER_AGE, age)
+            apply()
         }
     }
 
-    val userIdFlow: Flow<Int?> = dataStore.data.map { prefs ->
-        prefs[USER_ID]
+    fun getUser(): Pair<String, Int>? {
+        val name = prefs.getString(USER_NAME, null)
+        val age = prefs.getInt(USER_AGE, -1)
+        return if (name != null && age >= 0) Pair(name, age) else null
     }
 
-    suspend fun clearUserData() {
-        dataStore.edit { it.clear() }
+    fun getUserId(): Int? {
+        val id = prefs.getInt(USER_ID, -1)
+        return if (id >= 0) id else null
     }
 
-    val userData: Flow<Pair<String, Int>?> = dataStore.data
-        .map { prefs ->
-            val name = prefs[USER_NAME]
-            val age = prefs[USER_AGE]
-            if (name != null && age != null) Pair(name, age) else null
-        }
+    fun clearUserData() {
+        prefs.edit().clear().apply()
+    }
 }

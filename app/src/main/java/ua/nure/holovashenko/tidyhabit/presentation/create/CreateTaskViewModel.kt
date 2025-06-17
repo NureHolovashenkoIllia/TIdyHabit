@@ -7,7 +7,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import ua.nure.holovashenko.tidyhabit.data.local.model.Task
 import ua.nure.holovashenko.tidyhabit.data.local.model.TaskCategory
@@ -28,7 +27,7 @@ class CreateTaskViewModel @Inject constructor(
 
     fun saveTask(onSaved: () -> Unit) {
         viewModelScope.launch {
-            val currentUser = userRepository.currentUser.firstOrNull()
+            val currentUser = userRepository.getCurrentUser()
             val userId = currentUser?.id
 
             if (userId != null) {

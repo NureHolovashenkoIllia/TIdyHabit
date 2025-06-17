@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import ua.nure.holovashenko.tidyhabit.data.local.db.AppDatabase
 import ua.nure.holovashenko.tidyhabit.data.local.model.User
@@ -15,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val db: AppDatabase,
-    private val prefs: UserPreferences
+    private val userPreferences: UserPreferences
 ) : ViewModel() {
 
     private val _loginComplete = MutableStateFlow(false)
@@ -29,7 +28,7 @@ class LoginViewModel @Inject constructor(
 
     fun checkAutoLogin() {
         viewModelScope.launch {
-            val user = prefs.userData.firstOrNull()
+            val user = userPreferences.getUser()
             if (user != null) {
                 userName.value = user.first
                 userAge.value = user.second
@@ -49,7 +48,7 @@ class LoginViewModel @Inject constructor(
             } else {
                 db.userDao().insert(User(name = name, age = age)).toInt()
             }
-            prefs.saveUser(userId, name, age)
+            userPreferences.saveUser(userId, name, age)
             _loginComplete.value = true
         }
     }

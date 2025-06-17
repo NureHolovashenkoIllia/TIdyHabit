@@ -5,9 +5,8 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ua.nure.holovashenko.tidyhabit.data.local.model.Task
 import ua.nure.holovashenko.tidyhabit.data.local.model.User
@@ -23,13 +22,28 @@ class MainViewModel @Inject constructor(
     private val userPreferences: UserPreferences
 ) : ViewModel() {
 
-    val tasks: StateFlow<List<Task>> = taskRepo.tasks.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
-    )
+    private val _tasks = MutableStateFlow<List<Task>>(emptyList())
+    val tasks: StateFlow<List<Task>> get() = _tasks
 
-    val user: StateFlow<User?> = userRepo.currentUser.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), null
-    )
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> get() = _user
+
+    init {
+        loadInitialData()
+    }
+
+    private fun loadInitialData() {
+        viewModelScope.launch {
+            _tasks.value = taskRepo.getTasks()
+            _user.value = userRepo.getCurrentUser()
+        }
+    }
+
+    fun loadTasks() {
+        viewModelScope.launch {
+            _tasks.value = taskRepo.getTasks()
+        }
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun completeTask(task: Task) {
@@ -37,18 +51,23 @@ class MainViewModel @Inject constructor(
             taskRepo.markAsCompleted(task)
             userRepo.addXP(10)
             userRepo.recordDailyActivity()
+            _tasks.value = taskRepo.getTasks()
+            _user.value = userRepo.getCurrentUser()
         }
     }
 
     fun deleteTask(task: Task) {
         viewModelScope.launch {
             taskRepo.deleteTask(task)
+            _tasks.value = taskRepo.getTasks()
         }
     }
 
-    fun logout(onLoggedOut: () -> Unit) = viewModelScope.launch {
-        userPreferences.clearUserData()
-        onLoggedOut()
+    fun logout(onLoggedOut: () -> Unit) {
+        viewModelScope.launch {
+            userPreferences.clearUserData()
+            onLoggedOut()
+        }
     }
 }
 
