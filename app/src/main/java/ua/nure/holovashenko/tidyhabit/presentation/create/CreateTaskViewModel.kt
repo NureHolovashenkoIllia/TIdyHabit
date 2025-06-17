@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateTaskViewModel @Inject constructor(
-    private val repository: TaskRepository,
+    private val taskRepository: TaskRepository,
     private val userRepository: UserRepository
 ) : ViewModel() {
 
@@ -27,21 +27,19 @@ class CreateTaskViewModel @Inject constructor(
 
     fun saveTask(onSaved: () -> Unit) {
         viewModelScope.launch {
-            val currentUser = userRepository.getCurrentUser()
-            val userId = currentUser?.id
+            val userId = userRepository.getCurrentUser()?.id ?: return@launch
 
-            if (userId != null) {
-                val task = Task(
-                    title = title.trim(),
-                    description = description.trim(),
-                    category = category,
-                    dueDate = dueDateMillis,
-                    isCompleted = false,
-                    userId = userId
-                )
-                repository.addTask(task)
-                onSaved()
-            }
+            val task = Task(
+                title = title.trim(),
+                description = description.trim(),
+                category = category,
+                dueDate = dueDateMillis,
+                isCompleted = false,
+                userId = userId
+            )
+
+            taskRepository.addTask(task)
+            onSaved()
         }
     }
 }

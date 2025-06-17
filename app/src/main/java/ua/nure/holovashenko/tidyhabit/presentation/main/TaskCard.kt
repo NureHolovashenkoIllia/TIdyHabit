@@ -89,7 +89,7 @@ fun TaskCard(
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = if (task.isCompleted)
-                        MaterialTheme.colorScheme.primaryContainer // greenish
+                        MaterialTheme.colorScheme.primaryContainer
                     else
                         cardColor
                 )

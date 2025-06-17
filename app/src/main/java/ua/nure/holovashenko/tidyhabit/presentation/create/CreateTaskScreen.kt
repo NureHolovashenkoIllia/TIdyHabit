@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +34,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import ua.nure.holovashenko.tidyhabit.R
 import ua.nure.holovashenko.tidyhabit.data.local.model.TaskCategory
 import ua.nure.holovashenko.tidyhabit.presentation.main.getDisplayName
@@ -51,8 +51,9 @@ fun CreateTaskScreen(
     onCancel: () -> Unit
 ) {
     val context = LocalContext.current
-    val dateFormatter = remember { DateTimeFormatter.ofPattern(context.getString(R.string.date_format)) }
-
+    val dateFormatter = remember {
+        DateTimeFormatter.ofPattern(context.getString(R.string.date_format))
+    }
     val selectedDate = remember(viewModel.dueDateMillis) {
         Instant.ofEpochMilli(viewModel.dueDateMillis)
             .atZone(ZoneId.systemDefault())
@@ -68,10 +69,8 @@ fun CreateTaskScreen(
         contentAlignment = Alignment.Center
     ) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(8.dp),
             shape = MaterialTheme.shapes.large,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
         ) {
@@ -79,147 +78,24 @@ fun CreateTaskScreen(
                 modifier = Modifier.padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                // Title
                 Text(
                     text = context.getString(R.string.create_task),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.primary
                 )
 
-                // Task Title
-                OutlinedTextField(
-                    value = viewModel.title,
-                    onValueChange = {
-                        viewModel.title = it
-                        if (showTitleError && it.isNotBlank()) showTitleError = false
-                    },
-                    label = { Text(context.getString(R.string.task_title)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    isError = showTitleError
-                )
+                CreateTitleField(viewModel, showTitleError) { showTitleError = false }
 
-                if (showTitleError) {
-                    Text(
-                        text = context.getString(R.string.task_error),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
+                CreateDescriptionField(viewModel)
 
-                // Task Description
-                OutlinedTextField(
-                    value = viewModel.description,
-                    onValueChange = { viewModel.description = it },
-                    label = { Text(context.getString(R.string.task_description)) },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                CreateCategorySelector(viewModel)
 
-                // Category Section
-                Text(
-                    text = context.getString(R.string.task_category_select),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                CreateDatePicker(viewModel, selectedDate, dateFormatter)
 
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    TaskCategory.entries.forEach { category ->
-                        val isSelected = viewModel.category == category
-                        val backgroundColor by animateColorAsState(
-                            targetValue = if (isSelected)
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                            else
-                                MaterialTheme.colorScheme.surface
-                        )
-
-                        val borderColor by animateColorAsState(
-                            targetValue = if (isSelected)
-                                MaterialTheme.colorScheme.primary
-                            else
-                                MaterialTheme.colorScheme.outline
-                        )
-
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 2.dp)
-                                .clickable { viewModel.category = category },
-                            shape = MaterialTheme.shapes.medium,
-                            color = backgroundColor,
-                            border = BorderStroke(1.dp, borderColor),
-                            tonalElevation = if (isSelected) 2.dp else 0.dp
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                RadioButton(
-                                    selected = isSelected,
-                                    onClick = null, // click handled on Surface
-                                    colors = RadioButtonDefaults.colors(
-                                        selectedColor = MaterialTheme.colorScheme.primary
-                                    )
-                                )
-                                Text(
-                                    text = category.getDisplayName(context).replaceFirstChar { it.uppercase() },
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    modifier = Modifier.padding(start = 8.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // Date Picker
-                Column {
-                    Text(
-                        text = context.getString(R.string.task_due_date),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = selectedDate.format(dateFormatter),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-
-                        OutlinedButton(
-                            onClick = {
-                                val picker = DatePickerDialog(
-                                    context,
-                                    { _, year, month, dayOfMonth ->
-                                        val date = LocalDate.of(year, month + 1, dayOfMonth)
-                                        viewModel.dueDateMillis = date
-                                            .atStartOfDay(ZoneId.systemDefault())
-                                            .toInstant()
-                                            .toEpochMilli()
-                                    },
-                                    selectedDate.year,
-                                    selectedDate.monthValue - 1,
-                                    selectedDate.dayOfMonth
-                                )
-                                picker.show()
-                            }
-                        ) {
-                            Text(context.getString(R.string.task_date_change))
-                        }
-                    }
-                }
-
-                // Save Button
                 Button(
                     onClick = {
-                        if (viewModel.title.isBlank()) {
-                            showTitleError = true
-                        } else {
-                            viewModel.saveTask(onTaskSaved)
-                        }
+                        if (viewModel.title.isBlank()) showTitleError = true
+                        else viewModel.saveTask(onTaskSaved)
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -228,8 +104,7 @@ fun CreateTaskScreen(
 
                 TextButton(
                     onClick = onCancel,
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
                         text = context.getString(R.string.task_cancel),
@@ -238,6 +113,137 @@ fun CreateTaskScreen(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun CreateTitleField(viewModel: CreateTaskViewModel, showError: Boolean, onValid: () -> Unit) {
+    OutlinedTextField(
+        value = viewModel.title,
+        onValueChange = {
+            viewModel.title = it
+            if (showError && it.isNotBlank()) onValid()
+        },
+        label = { Text(stringResource(R.string.task_title)) },
+        modifier = Modifier.fillMaxWidth(),
+        isError = showError,
+        singleLine = true
+    )
+
+    if (showError) {
+        Text(
+            text = stringResource(R.string.task_error),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error
+        )
+    }
+}
+
+@Composable
+private fun CreateDescriptionField(viewModel: CreateTaskViewModel) {
+    OutlinedTextField(
+        value = viewModel.description,
+        onValueChange = { viewModel.description = it },
+        label = { Text(stringResource(R.string.task_description)) },
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+private fun CreateCategorySelector(viewModel: CreateTaskViewModel) {
+    val context = LocalContext.current
+
+    Text(
+        text = stringResource(R.string.task_category_select),
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        TaskCategory.entries.forEach { category ->
+            val isSelected = viewModel.category == category
+            val bgColor by animateColorAsState(
+                if (isSelected) MaterialTheme.colorScheme.primary.copy(0.1f)
+                else MaterialTheme.colorScheme.surface
+            )
+            val borderColor by animateColorAsState(
+                if (isSelected) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.outline
+            )
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { viewModel.category = category },
+                color = bgColor,
+                border = BorderStroke(1.dp, borderColor),
+                shape = MaterialTheme.shapes.medium,
+                tonalElevation = if (isSelected) 2.dp else 0.dp
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = isSelected,
+                        onClick = null,
+                        colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.primary)
+                    )
+                    Text(
+                        text = category.getDisplayName(context).replaceFirstChar { it.uppercase() },
+                        modifier = Modifier.padding(start = 8.dp),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+private fun CreateDatePicker(
+    viewModel: CreateTaskViewModel,
+    selectedDate: LocalDate,
+    dateFormatter: DateTimeFormatter
+) {
+    val context = LocalContext.current
+
+    Text(
+        text = stringResource(R.string.task_due_date),
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = selectedDate.format(dateFormatter),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        OutlinedButton(onClick = {
+            val picker = DatePickerDialog(
+                context,
+                { _, year, month, day ->
+                    val date = LocalDate.of(year, month + 1, day)
+                    viewModel.dueDateMillis = date
+                        .atStartOfDay(ZoneId.systemDefault())
+                        .toInstant()
+                        .toEpochMilli()
+                },
+                selectedDate.year,
+                selectedDate.monthValue - 1,
+                selectedDate.dayOfMonth
+            )
+            picker.show()
+        }) {
+            Text(stringResource(R.string.task_date_change))
         }
     }
 }

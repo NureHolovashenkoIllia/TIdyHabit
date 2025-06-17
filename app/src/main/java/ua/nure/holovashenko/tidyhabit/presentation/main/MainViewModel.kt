@@ -29,20 +29,16 @@ class MainViewModel @Inject constructor(
     val user: StateFlow<User?> get() = _user
 
     init {
-        loadInitialData()
+        refreshAll()
     }
 
-    private fun loadInitialData() {
-        viewModelScope.launch {
-            _tasks.value = taskRepo.getTasks()
-            _user.value = userRepo.getCurrentUser()
-        }
+    fun refreshAll() = viewModelScope.launch {
+        _user.value = userRepo.getCurrentUser()
+        _tasks.value = taskRepo.getTasks()
     }
 
-    fun loadTasks() {
-        viewModelScope.launch {
-            _tasks.value = taskRepo.getTasks()
-        }
+    fun refreshTasks() = viewModelScope.launch {
+        _tasks.value = taskRepo.getTasks()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -51,15 +47,14 @@ class MainViewModel @Inject constructor(
             taskRepo.markAsCompleted(task)
             userRepo.addXP(10)
             userRepo.recordDailyActivity()
-            _tasks.value = taskRepo.getTasks()
-            _user.value = userRepo.getCurrentUser()
+            refreshAll()
         }
     }
 
     fun deleteTask(task: Task) {
         viewModelScope.launch {
             taskRepo.deleteTask(task)
-            _tasks.value = taskRepo.getTasks()
+            refreshTasks()
         }
     }
 
