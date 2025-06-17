@@ -8,7 +8,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,18 +15,38 @@ import kotlinx.coroutines.delay
 import ua.nure.holovashenko.tidyhabit.presentation.create.CreateTaskScreen
 import ua.nure.holovashenko.tidyhabit.presentation.login.LoginScreen
 import ua.nure.holovashenko.tidyhabit.presentation.main.MainScreen
+import ua.nure.holovashenko.tidyhabit.presentation.splash.SplashScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavGraph(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = NavDestinations.LOGIN) {
-        composable(NavDestinations.LOGIN) {
-            LoginScreen(
-                onLoginSuccess = { navController.navigate(NavDestinations.MAIN) }
+    NavHost(navController = navController, startDestination = NavDestinations.SPLASH) {
+        composable(NavDestinations.SPLASH) {
+            SplashScreen(
+                onLoginRequired = {
+                    navController.navigate(NavDestinations.LOGIN) {
+                        popUpTo(NavDestinations.SPLASH) { inclusive = true }
+                    }
+                },
+                onUserAuthenticated = {
+                    navController.navigate(NavDestinations.MAIN) {
+                        popUpTo(NavDestinations.SPLASH) { inclusive = true }
+                    }
+                }
             )
         }
+
+        composable(NavDestinations.LOGIN) {
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.navigate(NavDestinations.MAIN) {
+                        popUpTo(NavDestinations.LOGIN) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable(NavDestinations.MAIN) {
-            val context = LocalContext.current
             var shouldLogout by remember { mutableStateOf(false) }
 
             if (shouldLogout) {
