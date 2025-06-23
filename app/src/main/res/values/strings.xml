@@ -44,4 +44,19 @@
     <string name="task_date_change">Change</string>
     <string name="save_task">Save Task</string>
     <string name="task_cancel">Cancel</string>
+
+    <string name="streak_warning_title">Streak is at risk!</string>
+    <string name="streak_warning_message">Complete at least one task today to keep your streak!</string>
+
+    <string name="no_tasks_today_title">No tasks for today</string>
+    <string name="no_tasks_today_message">Add a new task to maintain your habit!</string>
+
+    <string name="daily_tasks_title">Today’s tasks</string>
+    <plurals name="uncompleted_tasks_message">
+        <item quantity="one">You have %d uncompleted task!</item>
+        <item quantity="other">You have %d uncompleted tasks!</item>
+    </plurals>
+
+    <string name="all_tasks_done_title">All tasks completed!</string>
+    <string name="all_tasks_done_message">Great job! You’ve completed all today’s tasks.</string>
 </resources>

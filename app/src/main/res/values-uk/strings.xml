@@ -44,4 +44,20 @@
     <string name="task_date_change">Змінити</string>
     <string name="save_task">Зберегти завдання</string>
     <string name="task_cancel">Скасувати</string>
+
+    <string name="streak_warning_title">Стрік під загрозою!</string>
+    <string name="streak_warning_message">Виконайте хоч одне завдання до кінця дня, щоб не втратити стрік!</string>
+
+    <string name="no_tasks_today_title">Жодного завдання на сьогодні</string>
+    <string name="no_tasks_today_message">Додайте нове завдання для підтримання звички!</string>
+
+    <string name="daily_tasks_title">Сьогоднішні завдання</string>
+    <plurals name="uncompleted_tasks_message">
+        <item quantity="one">У вас %d невиконане завдання!</item>
+        <item quantity="few">У вас %d невиконаних завдання!</item>
+        <item quantity="many">У вас %d невиконаних завдань!</item>
+    </plurals>
+
+    <string name="all_tasks_done_title">Усі завдання виконано!</string>
+    <string name="all_tasks_done_message">Чудова робота! Ви виконали всі завдання на сьогодні.</string>
 </resources>
