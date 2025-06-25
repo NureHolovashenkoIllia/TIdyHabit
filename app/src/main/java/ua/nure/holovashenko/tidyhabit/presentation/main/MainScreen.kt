@@ -47,7 +47,7 @@ fun MainScreen(
     val groupedTasks = remember(tasks) { groupTasksByDate(tasks, today) }
 
     LaunchedEffect(Unit) {
-        viewModel.refreshTasks()
+        viewModel.onStart()
     }
 
     Scaffold(

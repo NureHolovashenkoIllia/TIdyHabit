@@ -59,4 +59,6 @@
 
     <string name="all_tasks_done_title">All tasks completed!</string>
     <string name="all_tasks_done_message">Great job! You’ve completed all today’s tasks.</string>
+
+    <string name="exact_alarm_permission">Exact alarms are disabled. Please enable them in settings.</string>
 </resources>

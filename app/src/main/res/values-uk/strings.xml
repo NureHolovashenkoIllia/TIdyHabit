@@ -60,4 +60,6 @@
 
     <string name="all_tasks_done_title">Усі завдання виконано!</string>
     <string name="all_tasks_done_message">Чудова робота! Ви виконали всі завдання на сьогодні.</string>
+
+    <string name="exact_alarm_permission">Точні нагадування вимкнені. Увімкніть їх у налаштуваннях.</string>
 </resources>

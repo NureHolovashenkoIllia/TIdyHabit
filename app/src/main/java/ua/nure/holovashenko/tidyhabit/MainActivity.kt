@@ -49,7 +49,8 @@ class MainActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
             if (!alarmManager.canScheduleExactAlarms()) {
-                Toast.makeText(this, "Точні нагадування вимкнені. Включіть їх у налаштуваннях.", Toast.LENGTH_LONG).show()
+                val message = getString(R.string.exact_alarm_permission)
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
                 val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
                 startActivity(intent)
             }

@@ -17,7 +17,17 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "ua.nure.holovashenko.tidyhabit.TidyHabitHiltTestRunner"
+    }
+
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md",
+                "META-INF/NOTICE.md"
+            )
+        }
     }
 
     buildTypes {
@@ -54,15 +64,11 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts.v161)
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.work)
-    kapt("androidx.hilt:hilt-compiler:1.2.0")
-
-    kapt(libs.hilt.compiler)
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("androidx.datastore:datastore-preferences:1.1.7")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation(libs.nav.compose)
     implementation("androidx.room:room-runtime:2.7.1")
-    kapt("androidx.room:room-compiler:2.7.1")
     implementation("androidx.room:room-ktx:2.7.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -72,14 +78,27 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
+
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
+    kapt("androidx.room:room-compiler:2.7.1")
+    kapt(libs.hilt.compiler)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation("io.mockk:mockk-android:1.13.8")
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.56.1")
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test:core:1.6.1")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+    kaptAndroidTest("com.google.dagger:hilt-compiler:2.56.1")
+
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
     testImplementation(libs.junit)
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
     testImplementation("io.mockk:mockk:1.13.8")
+    testImplementation(kotlin("test"))
 }

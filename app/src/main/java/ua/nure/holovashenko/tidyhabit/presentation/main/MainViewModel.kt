@@ -28,7 +28,7 @@ class MainViewModel @Inject constructor(
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> get() = _user
 
-    init {
+    fun onStart() {
         refreshAll()
     }
 
