@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,16 +19,26 @@ import java.time.ZoneId
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ReminderAlarmReceiver : BroadcastReceiver() {
+class ReminderAlarmReceiver(
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    private val injectedUserRepository: UserRepository? = null,
+    private val injectedTaskRepository: TaskRepository? = null
+) : BroadcastReceiver() {
 
-    @Inject lateinit var userRepository: UserRepository
-    @Inject lateinit var taskRepository: TaskRepository
+    @Inject lateinit var userRepositoryInjected: UserRepository
+    @Inject lateinit var taskRepositoryInjected: TaskRepository
+
+    private val userRepository: UserRepository
+        get() = injectedUserRepository ?: userRepositoryInjected
+
+    private val taskRepository: TaskRepository
+        get() = injectedTaskRepository ?: taskRepositoryInjected
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context, intent: Intent) {
         val type = intent.getStringExtra("type") ?: return
 
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(dispatcher).launch {
             when (type) {
                 "daily_tasks" -> {
                     sendDailyTasksNotification(context)
